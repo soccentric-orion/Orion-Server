@@ -16,7 +16,7 @@ help:
 	@echo ""
 	@echo "Build commands:"
 	@echo "  make build        - Auto-detect platform and build (uses build.sh)"
-	@echo "  make build-arm64  - Build for ARM64 (Raspberry Pi)"
+	@echo "  make build-arm64  - Build for ARM64 (STM32MP157F)"
 	@echo "  make build-amd64  - Build for x86_64"
 	@echo ""
 	@echo "Legacy commands (use unified instead):"
@@ -62,7 +62,7 @@ shell:
 
 # Legacy builds (kept for backwards compatibility)
 build-pi:
-	@echo "Building Docker image $(IMAGE_NAME) for Raspberry Pi 5 (ARM64)..."
+	@echo "Building Docker image $(IMAGE_NAME) for STM32MP157F (ARM64)..."
 	docker buildx build --platform linux/arm64 --load --build-arg UID=$$(id -u) --build-arg GID=$$(id -g) -t $(IMAGE_NAME) -f Dockerfile ..
 
 build-server:

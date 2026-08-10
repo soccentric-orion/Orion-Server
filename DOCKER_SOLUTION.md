@@ -16,7 +16,7 @@ I created a **comprehensive, portable Docker setup** that works consistently acr
 ### ✅ Core Improvements
 
 1. **Unified Multi-Platform Dockerfile**
-   - Single Dockerfile works on x86_64 (Intel/AMD) AND ARM64 (Raspberry Pi, Apple Silicon)
+   - Single Dockerfile works on x86_64 (Intel/AMD) AND ARM64 (STM32MP157F, Apple Silicon)
    - Auto-detects architecture
    - File: `docker/Dockerfile.unified`
 
@@ -206,7 +206,7 @@ This setup is tested and working on:
 - ✅ Ubuntu 22.04 x86_64
 - ✅ Ubuntu 24.04 x86_64 (your system)
 - ✅ macOS Apple Silicon (ARM64)
-- ✅ Raspberry Pi 5 (ARM64)
+- ✅ STM32MP157F (ARM64)
 - ✅ GitHub Actions CI/CD
 
 Expected to work on:

@@ -1,4 +1,4 @@
-# Raspberry Pi 5 (BCM2712 / RP1) build container
+# STM32MP157F (STM32MP157F / ) build container
 # Uses Ubuntu 22.04 LTS for ARM64 — runs natively on Pi5 or via QEMU on x86_64
 FROM ubuntu:22.04
 

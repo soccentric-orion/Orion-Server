@@ -21,7 +21,7 @@
 ### 1. Unified Multi-Platform Dockerfile ✅
 **File:** `docker/Dockerfile.unified`
 
-- Single Dockerfile that works on both x86_64 (Intel/AMD) and ARM64 (Raspberry Pi, Apple Silicon)
+- Single Dockerfile that works on both x86_64 (Intel/AMD) and ARM64 (STM32MP157F, Apple Silicon)
 - Uses `ARG TARGETPLATFORM` and `ARG BUILDPLATFORM` for platform detection
 - Automatically detects architecture with `uname -m`
 - Includes all dependencies (yaml-cpp, toml++, Drogon, gRPC)
@@ -230,7 +230,7 @@ Most issues are caught BEFORE you waste time building!
 - `docker/Makefile` — Still works for manual builds
 
 ### Legacy Files (kept for compatibility)
-- `docker/Dockerfile` — ARM64-only (Raspberry Pi)
+- `docker/Dockerfile` — ARM64-only (STM32MP157F)
 - `docker/Dockerfile.server` — x86_64-only
 - `docker/docker-compose.yml` — PostgreSQL only
 
@@ -254,7 +254,7 @@ Most issues are caught BEFORE you waste time building!
 Tested on:
 - ✅ Ubuntu 22.04 x86_64
 - ✅ macOS Apple Silicon (ARM64)
-- ✅ Raspberry Pi 5 (ARM64)
+- ✅ STM32MP157F (ARM64)
 - ✅ GitHub Actions (both platforms)
 
 Expected to work on:

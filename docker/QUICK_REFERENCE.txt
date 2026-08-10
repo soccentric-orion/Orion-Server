@@ -160,7 +160,7 @@
   Automatically Detected — No Configuration Needed!
   
   ✓ x86_64 (Intel/AMD)        — Most desktops, servers, CI
-  ✓ ARM64 (aarch64)           — Raspberry Pi 5, Apple Silicon
+  ✓ ARM64 (aarch64)           — STM32MP157F, Apple Silicon
   ✓ Both in CI/CD             — GitHub Actions example included
 
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓

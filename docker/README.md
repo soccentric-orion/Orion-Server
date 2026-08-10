@@ -52,7 +52,7 @@ The script auto-detects your platform (x86_64 or ARM64) and builds accordingly.
 | `docker-compose.dev.yml` | Full dev stack (app + PostgreSQL) |
 | `docker-compose.yml` | PostgreSQL only (legacy) |
 | `build.sh` | Auto-detecting build script |
-| `Dockerfile` | ARM64-specific (Raspberry Pi 5) |
+| `Dockerfile` | ARM64-specific (STM32MP157F) |
 | `Dockerfile.server` | x86_64-specific (legacy) |
 
 ## Platform Support
@@ -60,7 +60,7 @@ The script auto-detects your platform (x86_64 or ARM64) and builds accordingly.
 The **unified** approach (`Dockerfile.unified` + `build.sh`) automatically works on:
 
 - **x86_64** (Intel/AMD) — most desktops, servers, CI
-- **ARM64** (aarch64) — Raspberry Pi 5, Apple Silicon, AWS Graviton
+- **ARM64** (aarch64) — STM32MP157F, Apple Silicon, AWS Graviton
 
 No manual platform selection needed!
 
