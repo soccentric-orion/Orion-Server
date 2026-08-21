@@ -1,102 +1,34 @@
-# Orion Server The **Orion Server** is the central orchestration and data-collection backend for the Orion IV&V (Independent Validation & Verification) tool suite. It exposes: - A **gRPC service** (`HalService`) for the embedded HAL Client App to submit test results and receive streaming commands.
-- A **REST/HTTP API** (`/api/v1`) for the Web UI and external tooling.
-- A **PostgreSQL** backend with versioned migrations.
-- **OTA firmware upgrade** orchestration.
-- **Prometheus metrics** (optional). --- ## 🚀 Quick Start (Docker — Recommended) **The easiest and most reliable way** to get started on any machine: ```bash
-cd docker
-./setup.sh
-``` This will:
-1. Check Docker prerequisites
-2. Create `.env` from `.env.example`
-3. Build the Docker image for your platform (auto-detected)
-4. Start PostgreSQL and dev environment
-5. You're ready to build! Then enter the container and build:
+# Orion-Server
+
+## Project Summary
+
+Orion-Server is the on-premises C++ orchestration and evidence backend for Orion IV&V. The executable starts database migrations, a gRPC surface for embedded clients, and a Drogon HTTP application for the Dashboard and external tools. `HalServiceImpl` exposes direct HAL-oriented operations, while `ClientServiceImpl` receives the on-device client's result stream and delivers commands. REST is mounted under `/api/v1` and uses session cookies or bearer tokens through an authentication filter.
+
+Settings and structured logging configure the process; `DbClient` and `MigrationRunner` manage asynchronous PostgreSQL access and ten SQL migrations; repositories isolate persistence for users, tokens, targets, runs, results, logs, schedules, templates, notifications, OTA, and audit data; services implement authentication, run lifecycle, modules, configuration, comparisons, thresholds, anomaly handling, retention, and OTA orchestration. Controllers cover health, auth, target, modules, runs, logs, configuration, settings, notifications, and OTA. A bounded stream queue provides backpressure, and SSE exposes live logs or run events.
+
+CMake presets, Docker Compose, a dev container, configuration examples, dependency notes, and setup scripts support development. GoogleTest sources cover utilities, registry behavior, stream backpressure, migration behavior, anomaly and threshold logic, result conversion, run badges, UUIDs, time, and hashing. The audit records 65 CTest entries with one migration test skipped without `ORION_TEST_DSN`; that is evidence, not a universal run claim.
+
+## Feature Inventory
+
+| # | Name / Description | Implemented? | Test Coverage? | Manual Test |
+|---:|---|---|---|---|
+| 1 | CMake-built executable and settings | Implemented | Partial: config tests exist | [ ] Manual verification required |
+| 2 | Drogon REST API under `/api/v1` | Implemented | Partial: controller/unit coverage | [ ] Manual verification required |
+| 3 | Session and bearer-token auth filter | Implemented | Partial: utility/service tests | [ ] Manual verification required |
+| 4 | HAL and Client gRPC services | Implemented | Partial: backpressure/conversion tests | [ ] Manual verification required |
+| 5 | PostgreSQL access and ten migrations | Implemented | Partial: migration test requires DSN | [ ] Manual verification required |
+| 6 | Run lifecycle, scheduling, retention, comparisons | Implemented | Partial: run/service tests | [ ] Manual verification required |
+| 7 | Module registry and test config persistence | Implemented | Partial: `ModuleRegistryTest` | [ ] Manual verification required |
+| 8 | Result/log ingestion and SSE streams | Implemented | Partial: end-to-end unverified | [ ] Manual verification required |
+| 9 | OTA, notifications, audit, thresholds | Implemented | Partial: anomaly/threshold tests | [ ] Manual verification required |
+| 10 | Docker, dev container, scripts, presets | Implemented | Unknown: environment-dependent | [ ] Manual verification required |
+
+## Build and Test
+
 ```bash
-docker exec -it orion-dev bash
-cmake --preset debug && cmake --build build/debug
-``` ### Alternative: VS Code Dev Container Open this project in VS Code and:
-1. Install the "Dev Containers" extension
-2. Press `F1` → "Dev Containers: Reopen in Container"
-3. Wait for build (first time takes ~10 min) Everything is configured automatically! See [docker/README.md](docker/README.md) for detailed Docker documentation. --- ## Architecture Overview ```
-HAL Client (embedded) ──gRPC (port 9090)──► HalServiceImpl │
-Web UI/ REST clients ──HTTP (port 8080)──► Drogon REST API │ ┌──────────┴──────────┐ │ Service Layer │ │ RunService │ │ LogService │ │ AuthService │ │ OtaService ... │ └──────────┬──────────┘ │ ┌──────────┴──────────┐ │ Repository Layer │ │ (Drogon ORM/ PG) │ └──────────┬──────────┘ │ PostgreSQL 15+
-``` --- ## Prerequisites (Native Build) **Note:** Using Docker (see Quick Start above) avoids all manual dependency installation. For native builds without Docker: | Tool | Version |
-|------|---------|
-| CMake | 3.22+ |
-| vcpkg | latest |
-| C++ compiler | GCC 12+ or Clang 16+ |
-| PostgreSQL | 15+ |
-| protoc + grpc_cpp_plugin | matching vcpkg grpc version | Set `VCPKG_ROOT` in your environment before building. --- ## Quick Start (Local Dev) ```bash
-cp .env.example .env
-# Edit .env — at minimum set ORION_DB_* and ORION_SESSION_SECRET # Start Postgres
-docker compose -f docker/docker-compose.yml up postgres -d # Build and run (loads .env automatically)
-./scripts/run_dev.sh
-``` Or with Docker Compose (full stack): ```bash
-docker compose -f docker/docker-compose.yml up --build
-``` --- ## Building ```bash
-# Debug (default dev preset)
 cmake --preset debug
-cmake --build build/debug # Release
-cmake --preset release
-cmake --build build/release # Run tests
+cmake --build build/debug
 cmake --preset test
 cmake --build build/test
-ctest --test-dir build/test --output-on-failure # ASan
-cmake --preset asan
-cmake --build build/asan
-``` --- ## Configuration All configuration is via environment variables. See `.env.example` for the full list. | Variable | Default | Description |
-|----------|---------|-------------|
-| `ORION_GRPC_LISTEN` | `0.0.0.0:9090` | gRPC bind address |
-| `ORION_HTTP_LISTEN` | `0.0.0.0:8080` | HTTP bind address |
-| `ORION_DB_HOST` | `localhost` | PostgreSQL host |
-| `ORION_DB_NAME` | `orion` | Database name |
-| `ORION_DB_USER` | `orion` | DB username |
-| `ORION_DB_PASSWORD` | *(required)* | DB password |
-| `ORION_SESSION_SECRET` | *(required, ≥32 chars)* | Session signing key |
-| `ORION_REGISTRY_PATH` | `registry.yaml` | Module registry YAML |
-| `ORION_OTA_STORAGE_PATH` | `/var/orion/ota` | OTA artifact directory |
-| `ORION_LOG_LEVEL` | `info` | Log level (trace/debug/info/warn/error) | --- ## Module Registry Modules are declared in a YAML file (path set by `ORION_REGISTRY_PATH`): ```yaml
-modules: - id: "com.example.temperature" name: "Temperature Monitor" description: "Reads temperature from sensor A" version: "1.2.0" result_type_url: "type.googleapis.com/orion.TempResult" config_type_url: "type.googleapis.com/orion.TempConfig" modes: ["single_shot", "monitoring"]
-``` --- ## Database Migrations SQL migration files live in `migrations/`. They are applied automatically at startup in alphabetical order. Migrations are idempotent (tracked in `schema_migrations`). To add a new migration, create `migrations/NNNN_description.sql`. --- ## API All protected endpoints require either:
-- A session cookie (from `POST/api/v1/auth/login`), or
-- An `Authorization: Bearer <token>` header. ### Key endpoints | Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/v1/health` | Health check |
-| POST | `/api/v1/auth/login` | Login → sets session |
-| POST | `/api/v1/auth/tokens` | Create API token |
-| GET | `/api/v1/modules` | List test modules |
-| POST | `/api/v1/runs` | Start a test run |
-| GET | `/api/v1/runs/{id}` | Get run details |
-| GET | `/api/v1/runs/{id}/logs` | List run logs |
-| GET | `/api/v1/runs/{id}/logs/tail` | SSE live log tail |
-| GET | `/api/v1/target` | Get board info |
-| POST | `/api/v1/target/heartbeat` | Board heartbeat |
-| POST | `/api/v1/ota/upload` | Upload OTA artifact |
-| POST | `/api/v1/ota/{id}/trigger` | Trigger OTA upgrade | --- ## Decisions Log | Decision | Rationale |
-|----------|-----------|
-| gRPC sync API for unary, streaming wait-loop | Simpler than async CQ for initial impl; async CQ adds complexity without benefit at this scale |
-| Drogon for REST | Built-in PG ORM, async, WebSocket, SSE, session management |
-| argon2id for passwords | OWASP recommended |
-| SHA-256 for API tokens | Tokens are long random strings; SHA-256 is fast and sufficient |
-| 1-minute minimum cron resolution | Full cron parser adds a dependency; document the limitation |
-| Single `board` row (unique partial index) | The system targets exactly one physical test board |
-| Migrations at startup | Ensures schema is always up to date; no separate migration tool needed |
-| vcpkg manifest mode | Reproducible dependency pinning per repo | ## Build ```sh
-cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build build -j$(nproc)
-``` Binary: `build/orion-server` ## Run (dev) ```sh
-./build/orion-server --config etc/orion/server.toml --log-level debug
-``` Without a config file the binary starts with compiled-in defaults. ## Test ```sh
-cmake --build build --target config-test
-ctest --test-dir build --output-on-failure
-``` ## Config Default path: `/etc/orion/server.toml`. See `etc/orion/server.toml` for all keys and defaults. CLI flags override file values: | Flag | Default |
-|------|---------|
-| `--config PATH` | `/etc/orion/server.toml` |
-| `--log-level LEVEL` | `info` | ## Implementation Status | Step | Status |
-|------|--------|
-| 1 · Skeleton + config + logger | ✓ done |
-| 2 · DB layer + migrations | — |
-| 3 · DB CRUD (runs + batches) | — |
-| 4 · Ingest queue + result writer | — |
-| 5 · gRPC bidi server | — |
-| … | — |
+ctest --test-dir build/test --output-on-failure
+```
