@@ -1,14 +1,28 @@
 # Orion-Server
 
-## Project Summary
+## 1. Project Summary
 
-Orion-Server is the on-premises C++ orchestration and evidence backend for Orion IV&V. The executable starts database migrations, a gRPC surface for embedded clients, and a Drogon HTTP application for the Dashboard and external tools. `HalServiceImpl` exposes direct HAL-oriented operations, while `ClientServiceImpl` receives the on-device client's result stream and delivers commands. REST is mounted under `/api/v1` and uses session cookies or bearer tokens through an authentication filter.
+Orion-Server is the on-premises C++ orchestration and evidence backend for Orion IV&V.
 
-Settings and structured logging configure the process; `DbClient` and `MigrationRunner` manage asynchronous PostgreSQL access and ten SQL migrations; repositories isolate persistence for users, tokens, targets, runs, results, logs, schedules, templates, notifications, OTA, and audit data; services implement authentication, run lifecycle, modules, configuration, comparisons, thresholds, anomaly handling, retention, and OTA orchestration. Controllers cover health, auth, target, modules, runs, logs, configuration, settings, notifications, and OTA. A bounded stream queue provides backpressure, and SSE exposes live logs or run events.
+- The executable starts database migrations, a gRPC surface for embedded clients, and a Drogon HTTP application for the Dashboard and external tools.
+- `HalServiceImpl` exposes direct HAL-oriented operations.
+- `ClientServiceImpl` receives the on-device client's result stream and delivers commands.
+- REST is mounted under `/api/v1` and uses session cookies or bearer tokens through an authentication filter.
 
-CMake presets, Docker Compose, a dev container, configuration examples, dependency notes, and setup scripts support development. GoogleTest sources cover utilities, registry behavior, stream backpressure, migration behavior, anomaly and threshold logic, result conversion, run badges, UUIDs, time, and hashing. The audit records 65 CTest entries with one migration test skipped without `ORION_TEST_DSN`; that is evidence, not a universal run claim.
+Settings and structured logging configure the process.
 
-## Feature Inventory
+- `DbClient` and `MigrationRunner` manage asynchronous PostgreSQL access and ten SQL migrations.
+- Repositories isolate persistence for users, tokens, targets, runs, results, logs, schedules, templates, notifications, OTA, and audit data.
+- Services implement authentication, run lifecycle, modules, configuration, comparisons, thresholds, anomaly handling, retention, and OTA orchestration.
+- Controllers cover health, auth, target, modules, runs, logs, configuration, settings, notifications, and OTA.
+- A bounded stream queue provides backpressure, and SSE exposes live logs or run events.
+
+CMake presets, Docker Compose, a dev container, configuration examples, dependency notes, and setup scripts support development.
+
+- GoogleTest sources cover utilities, registry behavior, stream backpressure, migration behavior, anomaly and threshold logic, result conversion, run badges, UUIDs, time, and hashing.
+- The audit records 65 CTest entries with one migration test skipped without `ORION_TEST_DSN`; that is evidence, not a universal run claim.
+
+## 2. Feature Status
 
 | # | Name / Description | Implemented? | Test Coverage? | Manual Test |
 |---:|---|---|---|---|
@@ -23,7 +37,7 @@ CMake presets, Docker Compose, a dev container, configuration examples, dependen
 | 9 | OTA, notifications, audit, thresholds | Implemented | Partial: anomaly/threshold tests | [ ] Manual verification required |
 | 10 | Docker, dev container, scripts, presets | Implemented | Unknown: environment-dependent | [ ] Manual verification required |
 
-## Build and Test
+## 3. Build and Test
 
 ```bash
 cmake --preset debug
