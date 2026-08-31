@@ -40,9 +40,7 @@ CMake presets, Docker Compose, a dev container, configuration examples, dependen
 ## 3. Build and Test
 
 ```bash
-cmake --preset debug
-cmake --build build/debug
-cmake --preset test
-cmake --build build/test
-ctest --test-dir build/test --output-on-failure
+# The build is Docker-based — the default and only build path:
+make build          # docker-build-server (x86 production)
+make test           # ctest (unit label) inside the Docker build container
 ```

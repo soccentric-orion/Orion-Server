@@ -14,7 +14,7 @@ Orion-Server is the C++ orchestration/evidence backend. Its root Makefile suppor
 make help
 cmake --preset debug
 ```
-The repository also contains `CMakePresets.json`, `LOCAL_SETUP.md`, `.env.example`, `infra`-style/runtime configuration, and migration directories. Native Make configuration enables `BUILD_TESTS=ON`; the server Docker path uses an x86 Ubuntu image and stores its build at `build/docker`.
+The repository also contains `CMakePresets.json`, `.env.example`, `infra`-style/runtime configuration, and migration directories. The build is Docker-based (`make build` → docker-build-server, x86 Ubuntu image, output at `build/docker`).
 
 ## 4. Build and Compile
 ```bash
